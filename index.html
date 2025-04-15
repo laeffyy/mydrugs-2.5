@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyDrugs: 2.5 by Laeffy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        
+        body { font-family: 'Inter', sans-serif; background-color: #000000; }
+        html { scroll-behavior: smooth; }
+        .logo { font-weight: 700; font-size: 1.75rem; letter-spacing: 0.05em; text-decoration: none; }
+        nav a { cursor: pointer; transition: opacity 0.2s ease; }
+        nav a:hover { opacity: 0.8; }
+        nav a.active-link { color: #ffffff; border-bottom: 2px solid #A78BFA; padding-bottom: 2px; }
+        .hidden { display: none !important; }
+
+        
+        @keyframes rgb-glow-animation { 0%{box-shadow:0 0 12px hsl(0,100%,55%)} 25%{box-shadow:0 0 12px hsl(70,100%,55%)} 50%{box-shadow:0 0 12px hsl(140,100%,55%)} 75%{box-shadow:0 0 12px hsl(210,100%,55%)} 100%{box-shadow:0 0 12px hsl(280,100%,55%)} }
+        @keyframes rgb-text-animation { 0%{color:hsl(0,100%,70%)} 25%{color:hsl(70,100%,70%)} 50%{color:hsl(140,100%,70%)} 75%{color:hsl(210,100%,70%)} 100%{color:hsl(280,100%,70%)} }
+        @keyframes slideInFadeOut { 0%{opacity:0;transform:translateX(-100%)} 15%{opacity:1;transform:translateX(0)} 85%{opacity:1;transform:translateX(0)} 100%{opacity:0;transform:translateX(-100%)} }
+        @keyframes blueBreatheGlow { 0%,100%{text-shadow:0 0 8px rgba(59,130,246,.7),0 0 16px rgba(59,130,246,.5)} 50%{text-shadow:0 0 12px rgba(59,130,246,.9),0 0 24px rgba(59,130,246,.7)} }
+        @keyframes yellowGlow { 0%,100%{text-shadow:0 0 3px rgba(250,204,21,.5),0 0 6px rgba(250,204,21,.3)} 50%{text-shadow:0 0 5px rgba(250,204,21,.7),0 0 10px rgba(250,204,21,.5)} }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+        
+        .product-card { background-color: #1F2937; border-radius: 0.5rem; overflow: hidden; transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; cursor: pointer; box-shadow: none; position: relative; display: flex; flex-direction: column; }
+        .product-card:hover { transform: scale(1.03); z-index: 10; }
+        .product-purple:hover { box-shadow: 0 0 25px 3px #a855f7; } /* PROHIBITED */
+        .product-green:hover { box-shadow: 0 0 25px 3px #22c55e; } /* Brass Knuckles */
+        .product-blue:hover { box-shadow: 0 0 25px 3px #DC2626; } /* MobTies - Strong Red */
+        .product-red:hover { box-shadow: 0 0 25px 3px #EC4899; } /* Heartbreak - Pink */
+        .product-pink:hover { box-shadow: 0 0 25px 3px #38BDF8; } /* @Laeffy - Baby Blue */
+
+        .product-card .product-card-content { padding: 0.75rem; flex-grow: 1; display: flex; flex-direction: column; }
+        @media (min-width: 640px) { .product-card .product-card-content { padding: 1rem; } }
+        .product-card .product-card-details { margin-bottom: 0.75rem; flex-grow: 1; }
+        @media (min-width: 640px) { .product-card .product-card-details { margin-bottom: 0.5rem; } }
+        .add-to-cart-btn { transition: background-color 0.2s ease; }
+        .countdown-btn { transition: background-color 0.2s ease; }
+        .btc-pill { background-color: #F59E0B; color: white; padding: 0.15rem 0.6rem; border-radius: 9999px; font-weight: 600; display: inline-block; margin-bottom: 0.25rem; }
+        .eth-price { display: inline-block; }
+        .product-details-text { text-align: right; line-height: 1.2; }
+        .aspect-w-2 { position: relative; padding-bottom: 150%; }
+        .aspect-h-3 { }
+        .aspect-w-2 > * { position: absolute; height: 100%; width: 100%; top: 0; right: 0; bottom: 0; left: 0; }
+
+        
+        .featured-card { background-color: #1F2937; border-radius: 0.5rem; border: 1px solid #374151; overflow: hidden; transition: transform 0.3s ease-in-out; position: relative; cursor: pointer; animation: rgb-glow-animation 3s linear infinite alternate; }
+        .featured-card:hover { transform: scale(1.01); z-index: 10; }
+        .featured-card h4.rgb-text-animated { animation-name: rgb-text-animation; animation-duration: 3s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: alternate; color: hsl(0, 100%, 70%); }
+
+        
+         .soon-card { transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; }
+         .soon-card:hover { opacity: 1 !important; transform: scale(1.03); box-shadow: 0 0 25px 4px rgba(255, 255, 255, 0.6); z-index: 10; }
+
+        
+        .faq-container { background-color: #1F2937; border-radius: 0.5rem; padding: 1rem 1.5rem; border: 1px solid #374151; }
+        .faq-item { border-bottom: 1px solid #374151; }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-question { cursor: pointer; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding-top 0.4s ease-out, padding-bottom 0.4s ease-out; padding-top: 0; padding-bottom: 0; }
+        .faq-answer p { margin-bottom: 0.5rem; }
+        .faq-answer.active { max-height: 500px; padding-top: 0.5rem; padding-bottom: 1rem; }
+        .faq-icon { transition: transform 0.3s ease; flex-shrink: 0; }
+        .faq-question.active .faq-icon { transform: rotate(45deg); }
+
+        
+        .safety-block { transition: transform 0.3s ease, background-color 0.3s ease; }
+        .safety-block h3 { transition: color 0.3s ease; }
+        .safety-block:hover { transform: scale(1.02); background-color: #2D3748; }
+        .safety-block:hover h3 { color: #A78BFA; }
+
+        
+        #cart-icon-container { position: relative; }
+        #cart-count, #cart-count-mobile { position: absolute; top: -8px; right: -10px; background-color: #EF4444; color: white; border-radius: 50%; padding: 0.1rem 0.4rem; font-size: 0.7rem; font-weight: bold; line-height: 1; display: flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; }
+        #cart-modal { position: fixed; top: 0; right: -100%; width: 90%; max-width: 400px; height: 100%; background-color: #111827; z-index: 150; transition: right 0.4s ease-in-out; box-shadow: -5px 0 15px rgba(0,0,0,0.5); display: flex; flex-direction: column; border-left: 1px solid #374151; }
+        #cart-modal.open { right: 0; }
+        #cart-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.6); z-index: 149; opacity: 0; transition: opacity 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out; pointer-events: none; backdrop-filter: blur(0); }
+        #cart-overlay.open { opacity: 1; pointer-events: auto; backdrop-filter: blur(4px); }
+
+        
+        #notification-area { position: fixed; bottom: 1rem; left: 1rem; z-index: 160; display: flex; flex-direction: column; gap: 0.5rem; }
+        .purchase-notification { background-color: rgba(31, 41, 55, 0.9); border: 1px solid #4B5563; box-shadow: 0 4px 6px rgba(0,0,0,0.3); opacity: 0; transform: translateX(-100%); animation: slideInFadeOut 5s ease-in-out forwards; }
+
+        
+        #mobile-menu { position: fixed; top: 0; left: -100%; width: 75%; max-width: 300px; height: 100%; background-color: #111827; z-index: 170; transition: left 0.3s ease-in-out; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        #mobile-menu.open { left: 0; }
+        #mobile-menu-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.6); z-index: 169; opacity: 0; transition: opacity 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out; pointer-events: none; backdrop-filter: blur(0); }
+        #mobile-menu-overlay.open { opacity: 1; pointer-events: auto; backdrop-filter: blur(4px); }
+        .desktop-links { display: none; align-items: center; }
+        @media (min-width: 768px) { .desktop-links { display: flex; } }
+
+        
+        .contact-pill { text-decoration: none; transition: opacity 0.2s ease-in-out; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+        .contact-pill:hover { opacity: 0.85; }
+        .contact-pill i { margin-right: 0.5rem; }
+        .instagram-pill { background: linear-gradient(to right, #833ab4, #fd1d1d, #fcb045); }
+        .youtube-pill { background-color: #FF0000; }
+        .discord-pill { background-color: #5865F2; }
+        .contact-description p { animation: yellowGlow 4s ease-in-out infinite alternate; }
+
+        
+        #age-gate-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 200; display: flex; align-items: center; justify-content: center; }
+        #age-gate-box { background-color: #1F2937; color: #e5e7eb; padding: 2rem; border-radius: 0.5rem; border: 1px solid #4B5563; text-align: center; box-shadow: 0 10px 15px rgba(0,0,0,0.4); max-width: 90%; width: 400px; }
+        .age-gate-btn { transition: background-color 0.2s ease, box-shadow 0.3s ease; }
+        #age-confirm-yes:hover { box-shadow: 0 0 15px 3px rgba(34, 197, 94, 0.7); }
+        #age-confirm-no:hover { box-shadow: 0 0 15px 3px rgba(239, 68, 68, 0.7); }
+        body.age-gate-active > *:not(#preloader):not(#age-gate-overlay) { filter: blur(5px); transition: filter 0.3s ease-out; user-select: none; pointer-events: none; }
+        .age-question-text { animation: blueBreatheGlow 3s ease-in-out infinite alternate; }
+
+        
+        #preloader { position: fixed; inset: 0; background-color: #000000; z-index: 9999; display: flex; align-items: center; justify-content: center; opacity: 1; transition: opacity 0.5s ease-out; }
+        #preloader.fade-out { opacity: 0; }
+        #loading-sprite { width: 128px; height: 128px; object-fit: contain; image-rendering: pixelated; image-rendering: -moz-crisp-edges; image-rendering: crisp-edges; }
+
+        
+        #image-carousel { aspect-ratio: 1536 / 711; box-shadow: 0 0 15px 2px rgba(167, 139, 250, 0.4); }
+        .carousel-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.7s ease-in-out; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .carousel-slide img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .carousel-slide-active { opacity: 1; }
+        .carousel-button { position: absolute; top: 50%; transform: translateY(-50%); background-color: rgba(0, 0, 0, 0.5); color: white; border: none; padding: 0.5rem; border-radius: 9999px; cursor: pointer; transition: background-color 0.2s ease; z-index: 10; }
+        .carousel-button:hover { background-color: rgba(0, 0, 0, 0.75); }
+        #carousel-prev { left: 1rem; }
+        #carousel-next { right: 1rem; }
+
+        
+        #dashboard-container { background-color: #111827; border: 1px solid #374151; border-radius: 0.5rem; padding: 1.5rem; }
+        #profit-chart-container { height: 250px; margin-bottom: 1.5rem; position: relative; }
+        #wallet-list { font-family: monospace; max-height: 150px; overflow-y: auto; border: 1px solid #374151; border-radius: 0.375rem; padding: 0.75rem; background-color: #1F2937; }
+        #wallet-list p { margin-bottom: 0.25rem; font-size: 0.875rem; color: #9CA3AF; white-space: nowrap; }
+        #wallet-list p .btc-amount { color: #F59E0B; font-weight: 600; margin-left: 0.5rem; text-shadow: 0 0 5px rgba(245, 158, 11, 0.7); }
+        #wallet-list p .eth-amount { color: #A78BFA; font-weight: 600; margin-left: 0.5rem; text-shadow: 0 0 5px rgba(167, 139, 250, 0.7); }
+
+        
+        .chat-container { background-color: #000000 !important; border: 1px solid #374151; }
+        #chat-display { background-color: #000000; border: 1px solid #374151; height: 400px; overflow-y: auto; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1rem; scroll-behavior: smooth; display: flex; flex-direction: column; }
+        .chat-message-wrapper { display: flex; flex-direction: column; margin-bottom: 1rem; max-width: 90%; animation: fadeInUp 0.4s ease-out forwards; }
+        .chat-message-container { display: flex; align-items: flex-start; width: 100%; }
+        .chat-bubble { padding: 0.6rem 0.9rem; border-radius: 0.5rem; background-color: #374151; color: #D1D5DB; word-wrap: break-word; width: fit-content; max-width: 100%; position: relative; transition: transform 0.2s ease-out, filter 0.2s ease-out; }
+        .chat-bubble:hover { transform: scale(1.02); filter: brightness(1.15); }
+        .chat-nickname { font-weight: 600; font-size: 0.8rem; display: block; margin-bottom: 0.3rem; }
+        .chat-timestamp-below { font-size: 0.7rem; color: #6B7280; text-align: right; margin-top: 0.25rem; padding-right: 0.25rem; }
+        .chat-message-text { font-size: 0.9rem; line-height: 1.4; display: block; }
+        .chat-avatar { width: 44px; height: 44px; border-radius: 50%; margin-right: 0.75rem; object-fit: cover; flex-shrink: 0; background-color: #4B5563; margin-top: 2px; cursor: pointer; transition: transform 0.2s ease; }
+        .chat-avatar:hover { transform: scale(1.1); }
+        .chat-message-wrapper.my-message { margin-left: auto; margin-right: 0; align-items: flex-end; }
+        .chat-message-wrapper.my-message .chat-message-container { flex-direction: row-reverse; }
+        .chat-message-wrapper.my-message .chat-bubble { background-color: #1D4ED8; color: #EFF6FF; }
+        .chat-message-wrapper.my-message .chat-avatar { margin-right: 0; margin-left: 0.75rem; }
+        .chat-message-wrapper.my-message .chat-nickname { color: #DBEAFE; }
+        .chat-message-wrapper.my-message .chat-timestamp-below { color: #93C5FD; }
+        .chat-system-message { font-style: italic; color: #6B7280; background-color: transparent; text-align: center; padding: 0.25rem; margin: 0.5rem auto; font-size: 0.875rem; width: 100%; animation: none; }
+
+        
+        #chat-color-picker, #profile-edit-color-picker, #chat-glow-color-picker, #profile-edit-glow-color-picker { /* Added chat-glow-color-picker */
+            border: 1px solid #6B7280; /* Added border */
+            width: 36px; height: 36px;
+            border-radius: 50%; cursor: pointer; background-color: #4B5563;
+            vertical-align: middle;
+            appearance: none; -webkit-appearance: none; -moz-appearance: none; 
+        }
+        #chat-color-picker::-webkit-color-swatch-wrapper, #profile-edit-color-picker::-webkit-color-swatch-wrapper, #chat-glow-color-picker::-webkit-color-swatch-wrapper, #profile-edit-glow-color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+        #chat-color-picker::-webkit-color-swatch, #profile-edit-color-picker::-webkit-color-swatch, #chat-glow-color-picker::-webkit-color-swatch, #profile-edit-glow-color-picker::-webkit-color-swatch { border: none; border-radius: 50%; }
+        #chat-color-picker::-moz-color-swatch, #profile-edit-color-picker::-moz-color-swatch, #chat-glow-color-picker::-moz-color-swatch, #profile-edit-glow-color-picker::-moz-color-swatch { border: none; border-radius: 50%; }
+
+        
+        #avatar-modal { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 150; opacity: 0; transform: scale(0.9); transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; }
+        #avatar-modal.visible { opacity: 1; transform: scale(1); pointer-events: auto; }
+        #avatar-modal img { display: block; max-width: 80vw; max-height: 80vh; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+
+        
+        .change-profile-btn-3d { background-color: #DC2626; color: white; padding: 0.5rem 1.5rem; border-radius: 0.375rem; font-weight: 700; text-transform: uppercase; border: none; border-bottom: 4px solid #991B1B; transition: all 0.15s ease-out; cursor: pointer; display: inline-block; margin-top: 0; }
+        .change-profile-btn-3d:hover { background-color: #B91C1C; filter: brightness(1.1); transform: translateY(-1px); border-bottom-width: 5px; }
+        .change-profile-btn-3d:active { transform: translateY(2px); border-bottom-width: 2px; filter: brightness(0.9); }
+
+        
+        #profile-edit-area { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); z-index: 140; background-color: #1f2937; border: 1px solid #374151; padding: 1.5rem; border-radius: 0.5rem; margin-top: 0; margin-bottom: 0; width: 90%; max-width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; pointer-events: none; }
+        #profile-edit-area.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+        #profile-edit-area label { display: block; margin-bottom: 0.25rem; color: #9ca3af; font-size: 0.875rem; }
+        #profile-edit-area input[type="text"], #profile-edit-area input[type="url"] { width: 100%; background-color: #374151; border: 1px solid #4b5563; color: white; border-radius: 0.25rem; padding: 0.5rem 0.75rem; margin-bottom: 0.75rem; }
+        #profile-edit-area .color-input-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+        #profile-edit-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 139; opacity: 0; transition: opacity 0.3s ease-in-out; pointer-events: none; }
+        #profile-edit-overlay.visible { opacity: 1; pointer-events: auto; }
+
+    </style>
+</head>
+<body class="text-gray-200 age-gate-active">
+    <div id="preloader"> <img id="loading-sprite" src="https://i.imgur.com/84cqhHx.png" alt="Loading..." class="w-32 h-32 object-contain pixelated-img"> </div>
+    <div id="age-gate-overlay"> <div id="age-gate-box"> <h2 class="text-2xl font-bold mb-4 text-white">Age Verification</h2> <p class="mb-6 text-gray-300 age-question-text">Are you 18 or older?</p> <div id="age-gate-buttons" class="flex justify-center gap-4"> <button id="age-confirm-yes" class="age-gate-btn bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md">Yes</button> <button id="age-confirm-no" class="age-gate-btn bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-md">No</button> </div> <div id="age-denied-message" class="hidden mt-4 text-red-400 text-sm"> Come back in a few years... </div> </div> </div>
+    <div id="mobile-menu" class="p-6"> <div class="flex justify-between items-center mb-8"> <span class="text-white font-bold text-lg">Menu</span> <button id="close-mobile-menu-btn" class="text-gray-400 hover:text-white text-3xl">×</button> </div> <nav class="flex flex-col space-y-4"> <a href="#shop" data-page="shop" class="nav-link mobile-nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider active-link">Shop</a> <a href="#faq" data-page="faq" class="nav-link mobile-nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider">FAQ</a> <a href="#safety" data-page="safety" class="nav-link mobile-nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider">Safety</a> <a href="#chat" data-page="chat" class="nav-link mobile-nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider">Chat</a> <a href="#contact" data-page="contact" class="nav-link mobile-nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider">Contact</a> </nav> </div>
+    <div id="mobile-menu-overlay" class="hidden"></div>
+    <nav class="bg-black text-gray-300 shadow-md sticky top-0 z-50"> <div class="container mx-auto px-6 py-4 flex items-center justify-between relative"> <div class="flex-1 flex justify-start"> <div class="md:hidden"> <button id="hamburger-btn" class="text-gray-300 hover:text-white focus:outline-none"> <svg class="h-6 w-6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 6h16M4 12h16m-7 6h7"></path></svg> </button> </div> <div class="items-center space-x-6 desktop-links"> <a href="#shop" data-page="shop" class="nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider active-link">Shop</a> <a href="#faq" data-page="faq" class="nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider">FAQ</a> </div> </div> <div class="flex-shrink-0 px-4"> <a href="#easteregg" data-page="easteregg" class="logo text-white hover:opacity-80 transition-opacity duration-200 ease-in-out nav-link"> { M } MYDRUGS </a> </div> <div class="flex-1 flex justify-end items-center"> <div class="items-center space-x-6 desktop-links"> <a href="#safety" data-page="safety" class="nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider">Safety</a> <a href="#chat" data-page="chat" class="nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider">Chat</a> <a href="#contact" data-page="contact" class="nav-link text-white hover:opacity-80 text-lg font-medium uppercase tracking-wider">Contact</a> <div id="cart-icon-container" class="cursor-pointer"> <i class="fas fa-shopping-cart text-xl text-gray-300 hover:text-white"></i> <span id="cart-count" class="hidden">0</span> </div> </div> <div id="cart-icon-container-mobile" class="md:hidden cursor-pointer"> <i class="fas fa-shopping-cart text-xl text-gray-300 hover:text-white"></i> <span id="cart-count-mobile" class="hidden">0</span> </div> </div> </div> </nav>
+    <div id="cart-modal"> <div class="p-4 flex justify-between items-center border-b border-gray-700"> <h2 class="text-xl font-semibold text-white">Cart</h2> <button id="close-cart-btn" class="text-gray-400 hover:text-white text-2xl">×</button> </div> <div id="cart-items" class="flex-grow p-4 overflow-y-auto space-y-4"> <p class="text-gray-500 text-center">Your cart is empty.</p> </div> <div class="p-4 border-t border-gray-700"> <div class="flex justify-between items-center mb-4"> <span class="text-lg font-medium text-gray-300">Total:</span> <span id="cart-total" class="text-lg font-bold text-white">0.0000 BTC</span> </div> <a href="https://www.instagram.com/laeffy/" target="_blank" rel="noopener noreferrer" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-center transition duration-300"> Checkout </a> <p class="text-xs text-gray-500 mt-2 text-center">You will be redirected to Instagram.</p> </div> </div>
+    <div id="cart-overlay" class="hidden"></div>
+    <div id="notification-area"></div>
+    <div id="avatar-modal" class="hidden"> <img id="avatar-modal-img" src="" alt="Large Avatar"> </div>
+    <div id="profile-edit-overlay" class="hidden"></div>
+    <div id="profile-edit-area" class="hidden"> <h3 class="text-lg font-semibold text-center mb-4 text-gray-300">Edit Profile</h3> <div> <label for="profile-edit-nickname">Nickname:</label> <input type="text" id="profile-edit-nickname" placeholder="New nickname"> </div> <div> <label for="profile-edit-avatar-url">Avatar URL (GIF):</label> <input type="url" id="profile-edit-avatar-url" placeholder="https://example.com/new_avatar.gif"> </div> <div class="color-input-row"> <label for="profile-edit-color-picker" class="flex-shrink-0">Nickname Color:</label> <input type="color" id="profile-edit-color-picker"> </div> <div class="color-input-row"> <label for="profile-edit-glow-color-picker" class="flex-shrink-0">Nickname Glow:</label> <input type="color" id="profile-edit-glow-color-picker"> </div> <div class="flex justify-end gap-3 mt-4"> <button id="profile-edit-cancel" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded text-sm">Cancel</button> <button id="profile-edit-save" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-4 rounded text-sm">Save</button> </div> </div>
+
+    <main class="container mx-auto px-6 py-12">
+        <div id="page-shop" class="page-content">
+             <div class="bg-yellow-900 bg-opacity-30 border border-yellow-700 text-yellow-300 px-4 py-3 rounded relative mb-8" role="alert"> <strong class="font-bold">Fictional Warning:</strong> <span class="block sm:inline"> This is a demo page inspired by the Netflix series "How to Sell Drugs Online (Fast)". No real products are for sale. The cart functionality is just a simulation.</span> </div>
+             <div id="image-carousel" class="relative w-full max-w-4xl mx-auto my-8 overflow-hidden rounded-lg aspect-[1536/711] bg-gray-900"> <div class="carousel-slide carousel-slide-active"><img src="https://i.imgur.com/YlE0iDv.png" alt="[Carousel Image 1]" onerror="this.onerror=null; this.src='https://placehold.co/1536x711/1F2937/FFFFFF?text=Carousel+Error+1';"></div> <div class="carousel-slide"><img src="https://i.imgur.com/p1Kb27F.png" alt="[Carousel Image 2]" onerror="this.onerror=null; this.src='https://placehold.co/1536x711/1F2937/FFFFFF?text=Carousel+Error+2';"></div> <div class="carousel-slide"><img src="https://i.imgur.com/QZFtU2V.png" alt="[Carousel Image 3]" onerror="this.onerror=null; this.src='https://placehold.co/1536x711/1F2937/FFFFFF?text=Carousel+Error+3';"></div> <div class="carousel-slide"><img src="https://i.imgur.com/kKDArfS.png" alt="[Carousel Image 4]" onerror="this.onerror=null; this.src='https://placehold.co/1536x711/1F2937/FFFFFF?text=Carousel+Error+4';"></div> <button id="carousel-prev" class="carousel-button"><i class="fas fa-chevron-left"></i></button> <button id="carousel-next" class="carousel-button"><i class="fas fa-chevron-right"></i></button> </div>
+             <section id="popular" class="mb-12"> <h2 class="text-xl font-semibold text-gray-400 uppercase tracking-widest mb-6">Most Popular</h2> <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6"> <div class="product-card product-purple" data-id="p1" data-name="PROHIBITED" data-price="0.0021"> <div class="aspect-w-2 aspect-h-3 overflow-hidden rounded-t-lg"> <img src="https://i.imgur.com/WTfBYh7.png" alt="[Image of Product PROHIBITED]" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/200x300/8B5CF6/FFFFFF?text=Img+Error';"> </div> <div class="product-card-content"> <div class="product-card-details"> <h3 class="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">PROHIBITED</h3> <div class="flex justify-between items-start"> <div class="flex flex-col"> <span class="btc-pill text-xs sm:text-sm">0.0021 BTC</span> <span class="eth-price bg-violet-600 text-white text-xs sm:text-sm font-bold px-2 py-0.5 rounded-full mt-1">0.0802 ETH</span> </div> <div class="flex flex-col items-end"> <div class="product-details-text mb-1 text-xs uppercase">70MG FIC<br>PER PILL</div> <div class="text-yellow-400 text-xs">★★★★☆</div> </div> </div> </div> </div> <button class="add-to-cart-btn bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-b-lg w-full">Add</button> </div> <div class="product-card product-green" data-id="p2" data-name="Brass Knuckles" data-price="0.0045"> <div class="aspect-w-2 aspect-h-3 overflow-hidden rounded-t-lg"> <img src="https://i.imgur.com/bian8rx.png" alt="[Image of Product Brass Knuckles]" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/200x300/10B981/FFFFFF?text=Img+Error';"> </div> <div class="product-card-content"> <div class="product-card-details"> <h3 class="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Brass Knuckles</h3> <div class="flex justify-between items-start"> <div class="flex flex-col"> <span class="btc-pill text-xs sm:text-sm">0.0045 BTC</span> <span class="eth-price bg-violet-600 text-white text-xs sm:text-sm font-bold px-2 py-0.5 rounded-full mt-1">0.1667 ETH</span> </div> <div class="flex flex-col items-end"> <div class="product-details-text mb-1 text-xs uppercase">150MG FIC<br>PER PILL</div> <div class="text-yellow-400 text-xs">★★★★☆</div> </div> </div> </div> </div> <button class="add-to-cart-btn bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-b-lg w-full">Add</button> </div> <div class="product-card product-blue" data-id="p3" data-name="MobTies" data-price="0.0029"> <div class="aspect-w-2 aspect-h-3 overflow-hidden rounded-t-lg"> <img src="https://i.imgur.com/tM2XQi8.png" alt="[Image of Product MobTies]" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/200x300/3B82F6/FFFFFF?text=Img+Error';"> </div> <div class="product-card-content"> <div class="product-card-details"> <h3 class="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">MobTies</h3> <div class="flex justify-between items-start"> <div class="flex flex-col"> <span class="btc-pill text-xs sm:text-sm">0.0029 BTC</span> <span class="eth-price bg-violet-600 text-white text-xs sm:text-sm font-bold px-2 py-0.5 rounded-full mt-1">0.1114 ETH</span> </div> <div class="flex flex-col items-end"> <div class="product-details-text mb-1 text-xs uppercase">100MG FIC<br>PER PILL</div> <div class="text-yellow-400 text-xs">★★★★☆</div> </div> </div> </div> </div> <button class="add-to-cart-btn bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-b-lg w-full">Add</button> </div> <div class="product-card product-red" data-id="p4" data-name="Heartbreak" data-price="0.0013"> <div class="aspect-w-2 aspect-h-3 overflow-hidden rounded-t-lg"> <img src="https://i.imgur.com/vkNVvsL.png" alt="[Image of Product Heartbreak]" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/200x300/EF4444/FFFFFF?text=Img+Error';"> </div> <div class="product-card-content"> <div class="product-card-details"> <h3 class="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">Heartbreak</h3> <div class="flex justify-between items-start"> <div class="flex flex-col"> <span class="btc-pill text-xs sm:text-sm">0.0013 BTC</span> <span class="eth-price bg-violet-600 text-white text-xs sm:text-sm font-bold px-2 py-0.5 rounded-full mt-1">0.0523 ETH</span> </div> <div class="flex flex-col items-end"> <div class="product-details-text mb-1 text-xs uppercase">90MG FIC<br>PER PILL</div> <div class="text-yellow-400 text-xs">★★★★☆</div> </div> </div> </div> </div> <button class="add-to-cart-btn bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded-b-lg w-full">Add</button> </div> </div> </section>
+             <section id="new" class="mb-12"> <h2 class="text-xl font-semibold text-gray-400 uppercase tracking-widest mb-6">Coming Soon</h2> <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6"> <div class="product-card product-pink" data-id="p5" data-name="@Laeffy" data-price="0.0035"> <div class="aspect-w-2 aspect-h-3 overflow-hidden rounded-t-lg"> <img src="https://i.imgur.com/1ynt7N8.png" alt="" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/200x300/EC4899/FFFFFF?text=Img+Error';"> </div> <div class="product-card-content"> <div class="product-card-details"> <h3 class="text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3">@Laeffy</h3> <div class="flex justify-between items-start"> <div class="flex flex-col"> <span class="btc-pill text-xs sm:text-sm">0.0035 BTC</span> <span class="eth-price bg-violet-600 text-white text-xs sm:text-sm font-bold px-2 py-0.5 rounded-full mt-1">0.1300 ETH</span> </div> <div class="flex flex-col items-end"> <div class="product-details-text mb-1 text-xs uppercase">120MG FIC<br>PER PILL</div> </div> </div> </div> </div> <button id="countdown-btn-p5" class="countdown-btn bg-red-600 hover:bg-red-700 text-black text-sm font-bold py-2 px-4 rounded-b-lg w-full" disabled>14:00:00</button> </div> <div class="soon-card relative bg-gray-800 rounded-lg overflow-hidden border border-gray-700 opacity-60 group cursor-default"> <div class="aspect-w-2 aspect-h-3"> <img src="https://i.imgur.com/eixb8HG.png" alt="[Image Coming Soon 1]" class="w-full h-full object-cover filter blur-sm transition duration-300" onerror="this.onerror=null; this.src='https://placehold.co/200x300/374151/9CA3AF?text=Img+Error';"> </div> <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"> <i class="fas fa-lock text-gray-400 text-4xl"></i> </div> </div> <div class="soon-card relative bg-gray-800 rounded-lg overflow-hidden border border-gray-700 opacity-60 group cursor-default"> <div class="aspect-w-2 aspect-h-3"> <img src="https://i.imgur.com/OQysO5b.png" alt="[Image Coming Soon 2]" class="w-full h-full object-cover filter blur-sm transition duration-300" onerror="this.onerror=null; this.src='https://placehold.co/200x300/374151/9CA3AF?text=Erro+Img';"> </div> <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"> <i class="fas fa-lock text-gray-400 text-4xl"></i> </div> </div> <div class="soon-card relative bg-gray-800 rounded-lg overflow-hidden border border-gray-700 opacity-60 group cursor-default"> <div class="aspect-w-2 aspect-h-3"> <img src="https://i.imgur.com/lItB2SK.png" alt="[Image Coming Soon 3]" class="w-full h-full object-cover filter blur-sm transition duration-300" onerror="this.onerror=null; this.src='https://placehold.co/200x300/374151/9CA3AF?text=Img+Error';"> </div> <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"> <i class="fas fa-lock text-gray-400 text-4xl"></i> </div> </div> </div> </section>
+             <section id="featured-new" class="mb-12 mt-16"> <h2 class="text-xl font-semibold text-gray-400 uppercase tracking-widest mb-8 text-center">NEW ADDITIONS</h2> <div class="space-y-8 max-w-5xl mx-auto"> <div class="featured-card flex flex-col md:flex-row items-center"> <div class="w-full md:w-1/3 flex-shrink-0"> <img src="https://i.imgur.com/NeGmKyv.png" alt="" class="w-full h-64 md:h-full object-contain md:object-cover p-4 md:p-0" onerror="this.onerror=null; this.src='https://placehold.co/400x400/3B82F6/1F2937?text=Img+Error';"> </div> <div class="w-full md:w-2/3 p-6 md:p-8"> <h3 class="text-2xl font-bold uppercase text-white mb-2">BLUE HEART</h3> <div class="text-yellow-400 text-2xl mb-2">★★★★☆</div> <h4 class="text-lg italic uppercase rgb-text-animated mb-3">NEW ADDITION</h4> <p class="text-gray-300 text-sm leading-relaxed"> MEET THE NEWEST EDITION TO OUR LINEUP OF EXCLUSIVE PILLS FROM OUR PARTNER GOODTIMES. HAVE A RASPBERRY FLAVORED BLISS, EACH PILL CONTAINS 130MG OF MDMA, AND SOME NATURAL FLAVORING. AVAILABLE STARTING NEXT MONTH. </p> </div> </div> <div class="featured-card flex flex-col md:flex-row items-center"> <div class="w-full md:w-1/3 flex-shrink-0"> <img src="https://i.imgur.com/D2MFqSx.png" alt="" class="w-full h-64 md:h-full object-contain md:object-cover p-4 md:p-0" onerror="this.onerror=null; this.src='https://placehold.co/400x400/FACC15/1F2937?text=Img+Error';"> </div> <div class="w-full md:w-2/3 p-6 md:p-8"> <h3 class="text-2xl font-bold uppercase text-white mb-2">SMILEY FACE</h3> <div class="text-yellow-400 text-2xl mb-2">★★★★☆</div> <h4 class="text-lg italic uppercase rgb-text-animated mb-3">NEW ADDITION</h4> <p class="text-gray-300 text-sm leading-relaxed"> EVER WONDER WHY ECSTASY LOOKS LIKE CANDY BUT IS NEVER FLAVORED? TASTE THE CITRUS LEMON FLAVORED ECSTASY IN YOUR MOUTHS. EACH PILL CONTAINS 125MG OF MDMA, AND SOME NATURAL FLAVORING. AVAILABLE FOR A LIMITED TIME ONLY FOR OUR PREMIUM MEMBERS. </p> </div> </div> </div> </section>
+             <section id="faq-section-shop" class="mb-12 mt-24 scroll-mt-20"> <h2 class="text-xl font-semibold text-gray-400 uppercase tracking-widest mb-6 text-center">Frequently Asked Questions</h2> <div class="max-w-3xl mx-auto faq-container"> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>Is my purchase completely secure through your shop when I make a Purchase?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>Yes. Just add the desired quantity to the cart and enter your address at the checkout. Your personal data is automatically encrypted using PGP and deleted after the order is dispatched. Our team of professionals then packs the goods in clean-room conditions, and ensures smooth and secure processing.</p> </div> </div> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>Can I really only pay with cryptocurrency?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>Yes. We only accept payments in Bitcoin, Ripple, IOTA, and Ethereum. The payment procedure is not complicated. You just need to set up a suitable wallet. We do not offer Payback or other bonus systems. We weren't born yesterday.</p> </div> </div> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>How can I receive my order anonymously?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>Our shipping department operates around the clock to ensure fast and risk-free shipping. The delivery usually arrives within a few days. Your order can be sent to any valid postal address, PO box, or package station. Thanks to our highly complex and decentralized system, the transfer to the logistics service provider is already anonymous and cannot be traced back.</p> </div> </div> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>Is your product safe?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>Nobody has claimed that doing drugs was safe. However as long as you follow the guide in the Safety section there should not be any issues. Do not take MDMA if you are also under any prescriptions or doing any other drugs. It is also recommended not to take MDMA with any sort of alcohol as it might cause irreversible damage to your immune system and overall health.</p> </div> </div> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>Is any of this real?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>No. Of course not. Do you think we are dumb enough to open a clear web drug shop. We hosted this on Google Cloud for god's sake. Did you honestly think that a made up website from a Netflix series would be the best place to score MDMA?</p> </div> </div> </div> </section>
+        </div>
+        <div id="page-safety" class="page-content hidden">
+            <section id="safety" class="mb-12 mt-12"> <h1 class="text-3xl md:text-4xl font-bold uppercase text-red-500 mb-10 text-center" style="text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);">MDMA SAFETY GUIDELINES</h1> <div class="space-y-6 max-w-4xl mx-auto"> <div class="safety-block bg-gray-800 rounded-lg border border-gray-700 p-6"> <h3 class="text-xl font-semibold text-blue-400 mb-4 text-center transition-colors duration-300 ease-in-out">What is MDMA?</h3> <p class="text-sm text-gray-300 leading-relaxed">MDMA, also known as "ecstasy" or "molly," is a synthetic drug that alters mood and perception. It is widely known for promoting feelings of euphoria, empathy, and energy, but its use requires caution due to potential health risks.</p> </div> <div class="safety-block bg-gray-800 rounded-lg border border-gray-700 p-6"> <h3 class="text-xl font-semibold text-blue-400 mb-4 text-center transition-colors duration-300 ease-in-out">Usage Recommendations</h3> <ul class="list-disc list-inside text-sm text-gray-300 leading-relaxed space-y-2 pl-5"> <li>Always start with a small dose, especially if it's your first time.</li> <li>Avoid mixing MDMA with alcohol or other substances. The combination can be dangerous.</li> <li>Stay hydrated, but don't overdo it with water. Keep balanced.</li> <li>Rest and avoid dancing for prolonged periods. Excessive heat can overload your body.</li> </ul> </div> <div class="safety-block bg-gray-800 rounded-lg border border-gray-700 p-6"> <h3 class="text-xl font-semibold text-blue-400 mb-4 text-center transition-colors duration-300 ease-in-out">Effects on the Body</h3> <p class="text-sm text-gray-300 leading-relaxed">MDMA use causes an increase in serotonin, dopamine, and norepinephrine levels, which are neurotransmitters affecting mood, pleasure, and stress. The euphoric effect can last 3 to 6 hours, but this varies based on dosage and individual metabolism.</p> </div> <div class="safety-block bg-gray-800 rounded-lg border border-gray-700 p-6"> <h3 class="text-xl font-semibold text-blue-400 mb-4 text-center transition-colors duration-300 ease-in-out">Risks of Use</h3> <p class="text-sm text-gray-300 leading-relaxed">Despite short-term pleasant effects, MDMA use can cause dehydration, increased blood pressure, anxiety, and depression in the following days. Excessive and continuous use can damage the brain's neurotransmitters, causing memory problems, confusion, and mood disorders.</p> </div> <div class="safety-block bg-gray-800 rounded-lg border border-gray-700 p-6"> <h3 class="text-xl font-semibold text-blue-400 mb-4 text-center transition-colors duration-300 ease-in-out">Precautions and Prevention</h3> <ul class="list-disc list-inside text-sm text-gray-300 leading-relaxed space-y-2 pl-5"> <li>Avoid using MDMA if you are taking prescription medications or have a history of heart disease, high blood pressure, or psychiatric problems.</li> <li>Get adequate rest after use, allowing your body to recover.</li> <li>Always consult a doctor if you experience any prolonged adverse side effects.</li> <li>If you are at a party or event, make sure you are with trusted friends and know where to seek help if needed.</li> </ul> </div> <div class="safety-block bg-gray-800 rounded-lg border border-gray-700 p-6"> <h3 class="text-xl font-semibold text-blue-400 mb-4 text-center transition-colors duration-300 ease-in-out">The Importance of Harm Reduction</h3> <p class="text-sm text-gray-300 leading-relaxed">The concept of "harm reduction" aims to minimize the risks associated with substance use. If you choose to use MDMA, always keep in mind that responsible use can reduce the negative impact on your physical and mental health.</p> </div> </div> </section>
+        </div>
+        <div id="page-contact" class="page-content hidden">
+            <section id="contact" class="mb-12 mt-12"> <h2 class="text-2xl md:text-3xl font-bold uppercase text-white mb-10 text-center">Contact</h2> <div class="max-w-lg mx-auto bg-gray-800 rounded-lg border border-gray-700 p-6 md:p-8 mb-8"> <h3 class="text-xl font-semibold text-blue-400 mb-6 text-center">Social Media / Contact</h3> <div class="flex flex-wrap justify-center items-center gap-4"> <a href="https://www.instagram.com/laeffy/" target="_blank" rel="noopener noreferrer" class="contact-pill instagram-pill inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-white"> <i class="fab fa-instagram"></i> <span>laeffy</span> </a> <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="contact-pill youtube-pill inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-white"> <i class="fab fa-youtube"></i> <span>YouTube</span> </a> <span class="contact-pill discord-pill inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-white cursor-default"> <i class="fab fa-discord"></i> <span>.laeffy.</span> </span> </div> </div> <div class="max-w-2xl mx-auto mt-8 text-center text-gray-300 text-sm contact-description"> <p>Este projeto foi desenvolvido em apenas dois dias, inspirado na série da NETFLIX (How to Sell Drugs Online (Fast)), abrangendo tanto o design quanto a implementação, com algumas artes criadas com a ajuda de inteligência artificial...</p> <p class="mt-4">O objetivo desta interface é demonstrar as minhas habilidades em desenvolvimento Front-End, destacando capacidades em design moderno de 2025 no "meu estilo", responsividade e animações sofisticadas no ambiente web.</p> <p class="mt-4">Se estiver interessado em saber mais sobre o meu trabalho ou discutir oportunidades de colaboração, estou disponível para contacto e nas minhas redes sociais.</p> </div> </section>
+        </div>
+        <div id="page-faq" class="page-content hidden">
+            <section id="faq" class="mb-12 mt-24 scroll-mt-20"> <h2 class="text-xl font-semibold text-gray-400 uppercase tracking-widest mb-6 text-center">Frequently Asked Questions</h2> <div class="max-w-3xl mx-auto faq-container"> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>Is my purchase completely secure through your shop when I make a Purchase?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>Yes. Just add the desired quantity to the cart and enter your address at the checkout. Your personal data is automatically encrypted using PGP and deleted after the order is dispatched. Our team of professionals then packs the goods in clean-room conditions, and ensures smooth and secure processing.</p> </div> </div> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>Can I really only pay with cryptocurrency?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>Yes. We only accept payments in Bitcoin, Ripple, IOTA, and Ethereum. The payment procedure is not complicated. You just need to set up a suitable wallet. We do not offer Payback or other bonus systems. We weren't born yesterday.</p> </div> </div> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>How can I receive my order anonymously?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>Our shipping department operates around the clock to ensure fast and risk-free shipping. The delivery usually arrives within a few days. Your order can be sent to any valid postal address, PO box, or package station. Thanks to our highly complex and decentralized system, the transfer to the logistics service provider is already anonymous and cannot be traced back.</p> </div> </div> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>Is your product safe?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>Nobody has claimed that doing drugs was safe. However as long as you follow the guide in the Safety section there should not be any issues. Do not take MDMA if you are also under any prescriptions or doing any other drugs. It is also recommended not to take MDMA with any sort of alcohol as it might cause irreversible damage to your immune system and overall health.</p> </div> </div> <div class="faq-item"> <div class="faq-question flex justify-between items-center py-4 text-gray-200 hover:text-white"> <span>Is any of this real?</span> <svg class="faq-icon w-5 h-5 text-gray-500 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg> </div> <div class="faq-answer text-gray-300 text-sm"> <p>No. Of course not. Do you think we are dumb enough to open a clear web drug shop. We hosted this on Google Cloud for god's sake. Did you honestly think that a made up website from a Netflix series would be the best place to score MDMA?</p> </div> </div> </div> </section>
+        </div>
+        <div id="page-easteregg" class="page-content hidden">
+            <section id="easteregg-dashboard" class="mb-12 mt-12"> <h2 class="text-3xl font-bold text-center mb-8 text-violet-400 uppercase tracking-wider">PERFORMANCE (BTC & ETH)</h2> <div id="dashboard-container" class="grid grid-cols-1 md:grid-cols-3 gap-6"> <div class="md:col-span-1 bg-gray-800 p-6 rounded-lg border border-gray-700 flex flex-col items-center justify-center"> <h3 class="text-lg font-semibold text-gray-400 mb-3 uppercase">Total Profit</h3> <div id="profit-amount" class="text-3xl sm:text-4xl font-bold text-green-500" style="text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);"> $12,345.33 </div> <p class="text-xs text-green-400 mt-1 animate-pulse">increasing...</p> </div> <div class="md:col-span-2 bg-gray-800 p-6 rounded-lg border border-gray-700"> <h3 class="text-lg font-semibold text-gray-400 mb-4 text-center uppercase">Performance (BTC & ETH)</h3> <div id="profit-chart-container"> <canvas id="profit-chart"></canvas> </div> </div> <div class="md:col-span-3 bg-gray-800 p-6 rounded-lg border border-gray-700 mt-6"> <h3 class="text-lg font-semibold text-gray-400 mb-4 uppercase">Latest Transactions</h3> <div id="wallet-list"> </div> </div> </div> <div class="text-center mt-12"> <button data-page="shop" class="nav-link bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md transition duration-300"> Back to Shop </button> </div> </section>
+        </div>
+
+        <div id="page-chat" class="page-content hidden">
+            <section id="chat-section" class="mb-12 mt-12 scroll-mt-20">
+                <h2 class="text-2xl md:text-3xl font-bold uppercase text-white mb-4 text-center">Live Chat</h2>
+                 <div class="text-center mb-6">
+                    <button id="change-profile-btn" class="change-profile-btn-3d hidden">Change Profile</button>
+                </div>
+                <div class="max-w-3xl mx-auto chat-container bg-black rounded-lg border border-gray-700 p-4 md:p-6">
+                    <div id="chat-entry-area" class="mb-4">
+                        <div class="space-y-3">
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2"> <label for="chat-nickname" class="text-gray-400 flex-shrink-0 mb-1 sm:mb-0 sm:mr-2 self-start sm:self-center">Nickname:</label> <input type="text" id="chat-nickname" placeholder="Seu nickname" class="flex-grow bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <label for="chat-color-picker" class="text-gray-400 flex-shrink-0 ml-0 sm:ml-4 mr-2 self-center" title="Nickname Color">Color:</label> <input type="color" id="chat-color-picker" value="#A78BFA" title="Choose your nickname color"> </div>
+                            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2"> <label for="chat-avatar-url" class="text-gray-400 flex-shrink-0 mb-1 sm:mb-0 sm:mr-2 self-start sm:self-center">Avatar URL (GIF):</label> <input type="url" id="chat-avatar-url" placeholder="https://exemplo.com/avatar.gif (opcional)" class="flex-grow bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <label for="chat-glow-color-picker" class="text-gray-400 flex-shrink-0 ml-0 sm:ml-4 mr-2 self-center" title="Nickname Glow Color">Glow:</label> <input type="color" id="chat-glow-color-picker" value="#000000" title="Choose your nickname glow color (optional)"> </div>
+                        </div>
+                        <div class="mt-3 text-center"> <button id="chat-enterBtn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition duration-300 flex-shrink-0">Enter Chat</button> </div>
+                    </div>
+                    <div id="chat-display"> <p class="chat-system-message">Bem-vindo! Defina seus dados para entrar. Carregando histórico local...</p> </div>
+                    <div id="chat-inputArea" class="flex items-center gap-2 mt-4" style="display: none;"> <input type="text" id="chat-messageInput" placeholder="Digite sua mensagem..." class="flex-grow bg-gray-700 border border-gray-600 text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"> <button id="chat-sendBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300 flex-shrink-0">Send</button> </div>
+                </div>
+                <p class="text-xs text-gray-600 text-center mt-4">Chat with local history, avatars (via URL), colors, timestamps, and animations.</p>
+                <p class="text-xs text-gray-600 text-center mt-1">History saved in browser. Needs server.</p>
+            </section>
+        </div>
+    </main>
+
+    <footer class="bg-black text-gray-500 py-6 px-6 text-center mt-12"> <div class="container mx-auto"> <p class="text-sm">© 2025 MyDrugs Fictional Hub. Inspired by the Netflix series.</p> <p class="text-xs mt-2">This website is a work of fiction for demonstrative purposes and does not endorse or facilitate illegal activities.</p> </div> </footer>
+
+    <script>
+        
+        document.addEventListener('DOMContentLoaded', () => {
+
+            
+            const ageGateOverlay = document.getElementById('age-gate-overlay');
+            const confirmYesBtn = document.getElementById('age-confirm-yes');
+            const confirmNoBtn = document.getElementById('age-confirm-no');
+            const deniedMessage = document.getElementById('age-denied-message');
+            const ageGateButtons = document.getElementById('age-gate-buttons');
+            const bodyElement = document.body;
+            if (confirmYesBtn && ageGateOverlay && bodyElement) { confirmYesBtn.addEventListener('click', () => { ageGateOverlay.style.display = 'none'; bodyElement.classList.remove('age-gate-active'); }); }
+            if (confirmNoBtn && deniedMessage && ageGateButtons) { confirmNoBtn.addEventListener('click', () => { deniedMessage.classList.remove('hidden'); ageGateButtons.classList.add('hidden'); }); }
+
+           
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            faqQuestions.forEach(question => { question.addEventListener('click', () => { const answer = question.nextElementSibling; if (!answer || !answer.classList.contains('faq-answer')) return; const currentlyActive = question.classList.contains('active'); if (!currentlyActive) { question.classList.add('active'); answer.classList.add('active'); answer.style.maxHeight = answer.scrollHeight + "px"; } else { question.classList.remove('active'); answer.classList.remove('active'); answer.style.maxHeight = null; } }); });
+            window.addEventListener('resize', () => { document.querySelectorAll('.faq-answer.active').forEach(answer => { answer.style.maxHeight = answer.scrollHeight + "px"; }); });
+
+            
+            let cart = [];
+            const cartModal = document.getElementById('cart-modal');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalElement = document.getElementById('cart-total');
+            const cartCountElements = [document.getElementById('cart-count'), document.getElementById('cart-count-mobile')];
+            const closeCartBtn = document.getElementById('close-cart-btn');
+            const cartIconContainers = [document.getElementById('cart-icon-container'), document.getElementById('cart-icon-container-mobile')];
+            const cartOverlay = document.getElementById('cart-overlay');
+            const notificationArea = document.getElementById('notification-area');
+            const buyerNames = ["Dexter Morgan", "Patrick Bateman", "Notch", "Snoop Dogg", "Project-X", "Walter White", "Lisbeth Salander", "Neo", "Tyler Durden", "Tony Stark", "Rick Sanchez"];
+            const productNames = ["PROHIBITED", "Brass Knuckles", "MobTies", "Heartbreak", "@Laeffy", "BLUE HEART", "SMILEY FACE"];
+            
+            const productGlowColors = {
+                "PROHIBITED": "#a855f7", // product-purple
+                "Brass Knuckles": "#22c55e", // product-green
+                "MobTies": "#DC2626", // product-blue -> Red
+                "Heartbreak": "#EC4899", // product-red -> Pink
+                "@Laeffy": "#38BDF8", // product-pink -> Baby Blue
+                "BLUE HEART": "#3B82F6", // Default blue
+                "SMILEY FACE": "#F59E0B" // Default yellow/orange
+            };
+
+            function sanitizeHTML(str) { const temp = document.createElement('div'); temp.textContent = str; return temp.innerHTML; }
+            function addToCart(productId, productName, productPrice) { const existingItemIndex = cart.findIndex(item => item.id === productId); if (existingItemIndex > -1) cart[existingItemIndex].quantity += 1; else cart.push({ id: productId, name: productName, price: parseFloat(productPrice), quantity: 1 }); renderCart(); showCartNotification(productName); }
+            function renderCart() { if (!cartItemsContainer || !cartTotalElement || !cartCountElements.every(el => el)) return; cartItemsContainer.innerHTML = ''; let total = 0; let itemCount = 0; if (cart.length === 0) { cartItemsContainer.innerHTML = '<p class="text-gray-500 text-center">Your cart is empty.</p>'; } else { cart.forEach(item => { const itemElement = document.createElement('div'); itemElement.className = 'flex justify-between items-center border-b border-gray-700 pb-2 mb-2'; const safeItemName = sanitizeHTML(item.name); itemElement.innerHTML = `<div class="flex-grow pr-2"> <p class="text-sm font-medium text-white">${safeItemName}</p> <p class="text-xs text-amber-500">${item.price.toFixed(4)} BTC</p> </div> <div class="flex items-center flex-shrink-0"> <button class="cart-quantity-btn text-gray-400 hover:text-white px-2 py-1 rounded hover:bg-gray-700" data-id="${item.id}" data-change="-1">-</button> <span class="text-sm text-white mx-1 w-6 text-center">${item.quantity}</span> <button class="cart-quantity-btn text-gray-400 hover:text-white px-2 py-1 rounded hover:bg-gray-700" data-id="${item.id}" data-change="1">+</button> <button class="cart-remove-btn text-red-500 hover:text-red-400 ml-3 px-1 py-1 rounded hover:bg-gray-700" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button> </div>`; cartItemsContainer.appendChild(itemElement); total += item.price * item.quantity; itemCount += item.quantity; }); } cartTotalElement.textContent = `${total.toFixed(4)} BTC`; cartCountElements.forEach(el => { if (el) { if (itemCount > 0) { el.textContent = itemCount; el.classList.remove('hidden'); } else { el.classList.add('hidden'); } } }); addCartButtonListeners(); }
+            function addCartButtonListeners() { cartItemsContainer.querySelectorAll('.cart-quantity-btn').forEach(btn => { btn.removeEventListener('click', handleQuantityChange); btn.addEventListener('click', handleQuantityChange); }); cartItemsContainer.querySelectorAll('.cart-remove-btn').forEach(btn => { btn.removeEventListener('click', handleRemoveItem); btn.addEventListener('click', handleRemoveItem); }); }
+            function handleQuantityChange(e) { updateCartItem(e.currentTarget.dataset.id, parseInt(e.currentTarget.dataset.change)); }
+            function handleRemoveItem(e) { const button = e.target.closest('.cart-remove-btn'); if (button) removeFromCart(button.dataset.id); }
+            function updateCartItem(productId, change) { const itemIndex = cart.findIndex(item => item.id === productId); if (itemIndex > -1) { cart[itemIndex].quantity += change; if (cart[itemIndex].quantity <= 0) cart.splice(itemIndex, 1); } renderCart(); }
+            function removeFromCart(productId) { cart = cart.filter(item => item.id !== productId); renderCart(); }
+            function toggleCartModal() { if(cartModal && cartOverlay){ cartModal.classList.toggle('open'); cartOverlay.classList.toggle('hidden'); cartOverlay.classList.toggle('open'); document.body.style.overflow = cartModal.classList.contains('open') ? 'hidden' : ''; } }
+            function getRandomElement(arr) { if (!arr || arr.length === 0) return undefined; return arr[Math.floor(Math.random() * arr.length)]; }
+
+            // UPDATED showPurchaseNotification to add glow
+            function showPurchaseNotification() {
+                if (!notificationArea) return;
+                const name = getRandomElement(buyerNames);
+                const countdownButtonP5 = document.getElementById('countdown-btn-p5');
+                const isP5Available = countdownButtonP5 && !countdownButtonP5.disabled;
+                const eligibleProductNames = productNames.filter(pName => pName !== "@Laeffy" || isP5Available);
+                let item = "an item";
+                if (eligibleProductNames.length > 0) item = getRandomElement(eligibleProductNames);
+                else console.warn("Could not select product for notification");
+
+                const notification = document.createElement('div');
+                notification.className = 'purchase-notification text-gray-200 py-3 px-4 rounded-md text-sm';
+                const safeName = sanitizeHTML(name);
+                const safeItem = sanitizeHTML(item);
+                // Get glow color based on item name
+                const glowColor = productGlowColors[item] || 'transparent'; // Default to transparent if no match
+                const glowStyle = glowColor !== 'transparent' ? `text-shadow: 0 0 6px ${glowColor};` : '';
+
+                notification.innerHTML = `<i class="fas fa-check-circle text-green-400 mr-2"></i><strong>${safeName}</strong> bought <span style="${glowStyle}">${safeItem}</span>`;
+                notificationArea.appendChild(notification);
+                setTimeout(() => notification.remove(), 5000);
+            }
+            function showEasterEggNotification() { if (!notificationArea) return; const notification = document.createElement('div'); notification.className = 'purchase-notification text-gray-200 py-3 px-4 rounded-md text-sm'; notification.style.textShadow = '0 0 8px rgba(250, 204, 21, 0.7)'; notification.style.animation = 'slideInFadeOut 4s ease-in-out forwards'; notification.innerHTML = `<i class='fas fa-star text-yellow-400 mr-2'></i><strong>You found the Easter Egg!</strong>`; notificationArea.appendChild(notification); setTimeout(() => notification.remove(), 4000); }
+            function showCartNotification(itemName) { if (!notificationArea) return; const notification = document.createElement('div'); notification.className = 'purchase-notification text-gray-200 py-3 px-4 rounded-md text-sm'; notification.style.animation = 'slideInFadeOut 3s ease-in-out forwards'; const safeItemName = sanitizeHTML(itemName); notification.innerHTML = `<i class="fas fa-cart-plus text-blue-400 mr-2"></i><strong>${safeItemName}</strong> added to cart!`; notificationArea.appendChild(notification); setTimeout(() => notification.remove(), 3000); }
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => { if(button.id !== 'countdown-btn-p5' || !button.disabled) { button.addEventListener('click', (e) => { const card = e.target.closest('.product-card'); if (card) { const id = card.dataset.id; const name = card.dataset.name; const price = card.dataset.price; if (id && name && price) addToCart(id, name, price); } }); } });
+            cartIconContainers.forEach(el => el?.addEventListener('click', toggleCartModal)); closeCartBtn?.addEventListener('click', toggleCartModal); cartOverlay?.addEventListener('click', toggleCartModal); setInterval(showPurchaseNotification, 8000); renderCart();
+
+            
+            let canPlaySound = true; const hoverSoundPath = 'https://github.com/laeffyy/audio/raw/98af1cf87756d9dc4ab55c84ba8b79478f6d2482/0412.MP3';
+            function playHoverSound(event) { if (event.target.classList.contains('chat-avatar')) return; if (event.currentTarget.classList.contains('soon-card') && event.currentTarget.classList.contains('opacity-60')) return; if (canPlaySound) { try { const audio = new Audio(hoverSoundPath); audio.volume = 0.3; audio.play().catch(e => { if (e.name !== 'NotAllowedError') console.error('Audio playback error:', e); }); canPlaySound = false; setTimeout(() => { canPlaySound = true; }, 150); } catch (error) { console.error("Error creating or playing Audio object:", error); canPlaySound = true; } } }
+           
+            const productSoundElements = document.querySelectorAll('.product-card, .featured-card');
+            productSoundElements.forEach(element => {
+                element.addEventListener('mouseenter', playHoverSound);
+            });
+
+
+            
+            const navLinks = document.querySelectorAll('.nav-link'); const pageContents = document.querySelectorAll('.page-content'); const mobileMenu = document.getElementById('mobile-menu'); const mobileMenuOverlay = document.getElementById('mobile-menu-overlay'); const hamburgerBtn = document.getElementById('hamburger-btn'); const closeMobileMenuBtn = document.getElementById('close-mobile-menu-btn'); let profitChartInstance = null;
+            function showPage(pageId, skipScroll = false) {
+                pageContents.forEach(page => page.classList.add('hidden'));
+                const targetPage = document.getElementById(`page-${pageId}`);
+                if (targetPage) {
+                    targetPage.classList.remove('hidden');
+                    if (pageId === 'easteregg') { initProfitChart(); showEasterEggNotification(); }
+                    else if (pageId === 'chat') { 
+                        loadChatHistory();
+                        if (!isChatInitialized) { 
+                           resetChatUI(); 
+                           chatNicknameInput?.focus();
+                        } else if (!chatWs || chatWs.readyState !== WebSocket.OPEN) {
+                            connectChatWebSocket();
+                        }
+                         
+                         if (chatDisplay) {
+                            setTimeout(() => chatDisplay.scrollTop = chatDisplay.scrollHeight, 50);
+                         }
+                    }
+                } else { document.getElementById('page-shop')?.classList.remove('hidden'); pageId = 'shop'; }
+
+                navLinks.forEach(link => { if (link.classList.contains('logo') || link.textContent.trim() === 'Back to Shop') link.classList.remove('active-link'); else link.classList.toggle('active-link', link.dataset.page === pageId); });
+                if (pageId === 'easteregg') { document.querySelectorAll('nav .nav-link:not(.logo)').forEach(link => link.classList.remove('active-link')); }
+
+                if (!skipScroll && pageId !== 'easteregg') scrollToSection(pageId);
+                else if (pageId === 'easteregg') window.scrollTo({ top: 0, behavior: 'smooth'});
+                closeMobileMenuIfNeeded();
+
+                
+                if (pageId !== 'chat' && chatWs && chatWs.readyState === WebSocket.OPEN) {
+                    
+                }
+            }
+            function scrollToSection(pageId) { let targetElementId; switch(pageId) { case 'shop': targetElementId = 'popular'; break; case 'faq': targetElementId = 'faq'; break; case 'safety': targetElementId = 'safety'; break; case 'contact': targetElementId = 'contact'; break; case 'chat': targetElementId = 'chat-section'; break; default: targetElementId = pageId; } const targetSection = document.getElementById(targetElementId); if (targetSection) { const navbarHeight = document.querySelector('nav')?.offsetHeight || 70; const elementPosition = targetSection.getBoundingClientRect().top; const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - 20; window.scrollTo({ top: offsetPosition, behavior: "smooth" }); } else if (pageId !== 'shop') window.scrollTo({ top: 0, behavior: 'smooth'}); }
+            function closeMobileMenuIfNeeded() { if (mobileMenu?.classList.contains('open')) closeMobileMenu(); }
+            function openMobileMenu() { if (mobileMenu && mobileMenuOverlay) { mobileMenu.classList.add('open'); mobileMenuOverlay.classList.remove('hidden'); mobileMenuOverlay.classList.add('open'); document.body.style.overflow = 'hidden'; } }
+            function closeMobileMenu() { if (mobileMenu && mobileMenuOverlay) { mobileMenu.classList.remove('open'); mobileMenuOverlay.classList.remove('open'); setTimeout(() => mobileMenuOverlay.classList.add('hidden'), 300); document.body.style.overflow = ''; } }
+            navLinks.forEach(link => { link.addEventListener('click', (e) => { e.preventDefault(); const pageId = link.dataset.page; if (pageId) showPage(pageId); }); }); hamburgerBtn?.addEventListener('click', openMobileMenu); closeMobileMenuBtn?.addEventListener('click', closeMobileMenu); mobileMenuOverlay?.addEventListener('click', closeMobileMenu);
+
+            
+            function startCountdown(buttonId, hours) { const countdownButton = document.getElementById(buttonId); if (!countdownButton) return; let targetTime; const storedTargetTime = localStorage.getItem(`countdownTarget_${buttonId}`); if (storedTargetTime && parseInt(storedTargetTime) > new Date().getTime()) targetTime = parseInt(storedTargetTime); else { targetTime = new Date().getTime() + hours * 60 * 60 * 1000; localStorage.setItem(`countdownTarget_${buttonId}`, targetTime.toString()); } const intervalId = setInterval(() => { const now = new Date().getTime(); const distance = targetTime - now; if (distance < 0) { clearInterval(intervalId); countdownButton.textContent = "Available!"; countdownButton.classList.remove('bg-red-600', 'hover:bg-red-700', 'text-black', 'cursor-not-allowed'); countdownButton.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white', 'add-to-cart-btn'); countdownButton.disabled = false; localStorage.removeItem(`countdownTarget_${buttonId}`); const card = countdownButton.closest('.product-card'); if (card) { const newButton = countdownButton.cloneNode(true); countdownButton.parentNode.replaceChild(newButton, countdownButton); newButton.addEventListener('click', () => { const id = card.dataset.id, name = card.dataset.name, price = card.dataset.price; if (id && name && price) addToCart(id, name, price); }); } return; } const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)); const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)); const s = Math.floor((distance % (1000 * 60)) / 1000); countdownButton.textContent = `${h < 10 ? "0" : ""}${h}:${m < 10 ? "0" : ""}${m}:${s < 10 ? "0" : ""}${s}`; countdownButton.disabled = true; countdownButton.classList.add('cursor-not-allowed'); }, 1000); }
+            startCountdown('countdown-btn-p5', 14);
+
+            
+            const profitAmountElement = document.getElementById('profit-amount'); let currentProfit = 12345.33; const profitInterval = 150; const profitIncrement = 0.17; function formatCurrency(value) { return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); } if (profitAmountElement) setInterval(() => { currentProfit += profitIncrement + (Math.random() * profitIncrement); profitAmountElement.textContent = formatCurrency(currentProfit); }, profitInterval); const walletListElement = document.getElementById('wallet-list'); const maxWalletsToShow = 10; function generateRandomBtcAddress() { const c='13456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ'; let a='1'; for (let i=0;i<33;i++) a+=c.charAt(Math.floor(Math.random()*c.length)); return a; } function generateRandomEthAddress() { const c='0123456789abcdef'; let a='0x'; for (let i=0;i<40;i++) a+=c.charAt(Math.floor(Math.random()*c.length)); return a; } function addFictionalTransaction() { if (!walletListElement) return; const isBTC = Math.random() > 0.4; const address = isBTC ? generateRandomBtcAddress() : generateRandomEthAddress(); const amount = (Math.random() * (isBTC ? 0.05 : 0.5) + (isBTC ? 0.001 : 0.01)).toFixed(4); const currency = isBTC ? 'BTC' : 'ETH'; const amountClass = isBTC ? 'btc-amount' : 'eth-amount'; const p = document.createElement('p'); const shortAddress = address.substring(0, 10) + '...' + address.substring(address.length - 8); const safeAddress = sanitizeHTML(shortAddress); const safeAmount = sanitizeHTML(amount); const safeCurrency = sanitizeHTML(currency); p.innerHTML = `${safeAddress} <span class="${amountClass}">+${safeAmount} ${safeCurrency}</span>`; walletListElement.prepend(p); if (walletListElement.children.length > maxWalletsToShow) walletListElement.removeChild(walletListElement.lastChild); } if (walletListElement) setInterval(addFictionalTransaction, 2500);
+            function initProfitChart() { const ctx = document.getElementById('profit-chart')?.getContext('2d'); if (!ctx) return; if (profitChartInstance) profitChartInstance.destroy(); const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct']; const btcDataPoints = labels.map((_, i) => 4 + i * 2.8 + Math.random() * 8); const ethDataPoints = labels.map((_, i) => 3 + i * 2.5 + Math.random() * 8); profitChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [ { label: 'BTC', data: btcDataPoints, borderColor: 'rgba(245, 158, 11, 1)', backgroundColor: 'rgba(245, 158, 11, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0, pointHoverRadius: 0 }, { label: 'ETH', data: ethDataPoints, borderColor: 'rgba(168, 85, 247, 1)', backgroundColor: 'rgba(168, 85, 247, 0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 0, pointHoverRadius: 0 } ] }, plugins: [ChartDataLabels], options: { responsive: true, maintainAspectRatio: false, scales: { y: { display: false, beginAtZero: true }, x: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: (c) => c.dataIndex === c.chart.data.labels.length - 1, formatter: (v, c) => c.chart.data.datasets[c.datasetIndex].label, color: (c) => c.datasetIndex === 0 ? 'rgba(245, 158, 11, 1)' : 'rgba(168, 85, 247, 1)', align: 'right', anchor: 'end', offset: 8, font: { weight: 'bold', size: 12 } } }, animation: { duration: 1500, easing: 'easeInOutQuart' } } }); }
+
+           
+            const spriteUrls = [ 'https://i.imgur.com/84cqhHx.png', 'https://i.imgur.com/BD5zMbc.png', 'https://i.imgur.com/roBx0R5.png', 'https://i.imgur.com/NoTm3QX.png', 'https://i.imgur.com/TCcHBPA.png' ]; const loadingSpriteImg = document.getElementById('loading-sprite'); let currentSpriteIndex = 0; let spriteIntervalId = null; const spriteIntervalTime = 200; function cycleSprite() { if (loadingSpriteImg) { currentSpriteIndex = (currentSpriteIndex + 1) % spriteUrls.length; loadingSpriteImg.src = spriteUrls[currentSpriteIndex]; } else clearInterval(spriteIntervalId); } if (loadingSpriteImg) spriteIntervalId = setInterval(cycleSprite, spriteIntervalTime);
+            window.onload = () => { const preloader = document.getElementById('preloader'); const fadeOutDelay = 1500; const fadeDuration = 500; if (preloader) { setTimeout(() => { clearInterval(spriteIntervalId); preloader.classList.add('fade-out'); setTimeout(() => preloader.style.display = 'none', fadeDuration); }, fadeOutDelay); } pageContents.forEach(page => { if (!page.classList.contains('hidden')) page.style.opacity = '1'; }); };
+
+             
+            const carousel = document.getElementById('image-carousel'); const slides = carousel?.querySelectorAll('.carousel-slide'); const prevButton = document.getElementById('carousel-prev'); const nextButton = document.getElementById('carousel-next'); let currentSlideIndex = 0; let slideInterval; function showSlide(index) { if (!slides || slides.length === 0) return; slides.forEach((slide, i) => slide.classList.toggle('carousel-slide-active', i === index)); } function nextSlide() { currentSlideIndex = (currentSlideIndex + 1) % (slides?.length || 1); showSlide(currentSlideIndex); } function prevSlide() { currentSlideIndex = (currentSlideIndex - 1 + (slides?.length || 1)) % (slides?.length || 1); showSlide(currentSlideIndex); } function startSlideShow() { stopSlideShow(); slideInterval = setInterval(nextSlide, 5000); } function stopSlideShow() { clearInterval(slideInterval); } if (slides && slides.length > 0) { prevButton?.addEventListener('click', () => { prevSlide(); stopSlideShow(); }); nextButton?.addEventListener('click', () => { nextSlide(); stopSlideShow(); }); startSlideShow(); carousel.addEventListener('mouseenter', stopSlideShow); carousel.addEventListener('mouseleave', startSlideShow); }
+
+            
+            const chatNicknameInput = document.getElementById('chat-nickname');
+            const chatAvatarUrlInput = document.getElementById('chat-avatar-url');
+            const chatColorPicker = document.getElementById('chat-color-picker');
+            const chatGlowColorPicker = document.getElementById('chat-glow-color-picker'); // Added Glow Picker Ref
+            const chatEnterBtn = document.getElementById('chat-enterBtn');
+            const chatDisplay = document.getElementById('chat-display');
+            const chatMessageInput = document.getElementById('chat-messageInput');
+            const chatSendBtn = document.getElementById('chat-sendBtn');
+            const chatInputArea = document.getElementById('chat-inputArea');
+            const chatEntryArea = document.getElementById('chat-entry-area');
+            const avatarModal = document.getElementById('avatar-modal');
+            const avatarModalImg = document.getElementById('avatar-modal-img');
+            const changeProfileBtn = document.getElementById('change-profile-btn');
+            const profileEditArea = document.getElementById('profile-edit-area');
+            const profileEditOverlay = document.getElementById('profile-edit-overlay');
+            const profileEditNicknameInput = document.getElementById('profile-edit-nickname');
+            const profileEditAvatarUrlInput = document.getElementById('profile-edit-avatar-url');
+            const profileEditColorPicker = document.getElementById('profile-edit-color-picker');
+            const profileEditGlowColorPicker = document.getElementById('profile-edit-glow-color-picker');
+            const profileEditSaveBtn = document.getElementById('profile-edit-save');
+            const profileEditCancelBtn = document.getElementById('profile-edit-cancel');
+
+            let chatWs = null; let chatNickname = ''; let chatAvatarUrl = ''; let chatNicknameColor = '#A78BFA'; let chatNicknameGlowColor = 'transparent'; const chatHistoryKey = 'myDrugsChatHistory_v2'; const maxHistoryMessages = 50;
+            let isChatInitialized = false;
+
+            //  Chat Core Logic 
+            function loadChatHistory() { if (!chatDisplay) return; chatDisplay.innerHTML = ''; const historyJson = localStorage.getItem(chatHistoryKey); if (historyJson) { try { const history = JSON.parse(historyJson); history.forEach(msgData => { if (msgData && msgData.nickname && msgData.message && msgData.timestamp) { const isMyMsg = msgData.nickname === chatNickname; addChatMessage( msgData.nickname, msgData.message, false, isMyMsg, msgData.avatarUrl || '', msgData.nicknameColor || '#FFFFFF', msgData.nicknameGlowColor || 'transparent', msgData.timestamp, true ); } }); console.log(`Loaded ${history.length} messages`); } catch (e) { console.error("Error parsing history:", e); localStorage.removeItem(chatHistoryKey); } } else { console.log("No local history"); addChatMessage("System", "Welcome! No history found.", true); } setTimeout(() => { if(chatDisplay) chatDisplay.scrollTop = chatDisplay.scrollHeight; }, 50); }
+            function saveMessageToHistory(messageData) { if (!messageData || messageData.type !== 'message' || !messageData.timestamp) return; try { const historyJson = localStorage.getItem(chatHistoryKey); let history = historyJson ? JSON.parse(historyJson) : []; const dataToSave = { ...messageData, nicknameGlowColor: messageData.nicknameGlowColor || 'transparent' }; history.push(dataToSave); if (history.length > maxHistoryMessages) history = history.slice(history.length - maxHistoryMessages); localStorage.setItem(chatHistoryKey, JSON.stringify(history)); } catch (e) { console.error("Error saving message:", e); } }
+
+            function connectChatWebSocket() { const wsUrl = 'ws://localhost:8080'; if (chatWs && chatWs.readyState === WebSocket.OPEN) { chatInputArea.style.display = 'flex'; chatEntryArea.style.display = 'none'; changeProfileBtn.classList.remove('hidden'); return; } console.log(`Connecting to ${wsUrl}...`); addChatMessage("System", "Connecting...", true); chatWs = new WebSocket(wsUrl); chatWs.onopen = () => { console.log('Connected'); chatInputArea.style.display = 'flex'; chatEntryArea.style.display = 'none'; changeProfileBtn.classList.remove('hidden'); hideProfileEditModal(); const safeNick = sanitizeHTML(chatNickname); addChatMessage('System', `Connected as ${safeNick}.`, true); chatMessageInput.focus(); isChatInitialized = true; }; chatWs.onmessage = (event) => { let dataString; if (typeof event.data === 'string') dataString = event.data; else { dataString = event.data.toString(); console.warn('Received non-string data'); } try { const data = JSON.parse(dataString.trim()); if (data.type === 'message' && data.nickname && data.message && data.timestamp) { const isMyMessage = data.nickname === chatNickname; addChatMessage( data.nickname, data.message, false, isMyMessage, data.avatarUrl || '', data.nicknameColor || '#FFFFFF', data.nicknameGlowColor || 'transparent', data.timestamp ); saveMessageToHistory(data); } else if (data.type === 'system') { addChatMessage('System', data.message, true); } else { console.error("Unknown message type:", data); addChatMessage('System', `Unrecognized: ${dataString}`, true); } } catch (error) { console.error("Error processing message:", error, dataString); addChatMessage('System', `Error: ${error.message}`, true); } }; chatWs.onerror = (error) => { console.error('WS error:', error); addChatMessage('System', 'Connection error.', true); resetChatUI(); isChatInitialized = false; }; chatWs.onclose = (event) => { console.log(`WS closed: ${event.code}`); const message = event.wasClean ? 'Disconnected.' : 'Connection lost.'; addChatMessage('System', message, true); resetChatUI(); chatWs = null; isChatInitialized = false; }; }
+            function disconnectChatWebSocket() { if (chatWs && chatWs.readyState === WebSocket.OPEN) { console.log("Disconnecting..."); chatWs.close(1000, "User action"); } resetChatUI(); chatWs = null; isChatInitialized = false; }
+            function resetChatUI() { if (chatInputArea) chatInputArea.style.display = 'none'; if (chatEntryArea) chatEntryArea.style.display = 'block'; if (changeProfileBtn) changeProfileBtn.classList.add('hidden'); hideProfileEditModal(); }
+            function formatTimestamp(isoTimestamp) { if (!isoTimestamp) return ''; try { const date = new Date(isoTimestamp); const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); const day = date.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: '2-digit'}); return `${time} ${day}`; } catch (e) { console.error("Timestamp error:", e); return ''; } }
+
+            function addChatMessage(nick, message, isSystem = false, isMyMessage = false, avatarUrl = '', nicknameColor = '#FFFFFF', nicknameGlowColor = 'transparent', timestamp = '', isHistory = false) {
+                if (!chatDisplay) return; const messageWrapper = document.createElement('div'); const safeNick = sanitizeHTML(nick); const safeMessage = sanitizeHTML(message); const safeAvatarUrl = avatarUrl && (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) ? avatarUrl : ''; const safeNicknameColor = nicknameColor.match(/^#[0-9a-fA-F]{6}$/) ? nicknameColor : '#FFFFFF'; const safeNicknameGlowColor = (nicknameGlowColor === 'transparent' || nicknameGlowColor.match(/^#[0-9a-fA-F]{6}$/)) ? nicknameGlowColor : 'transparent'; const formattedTimestamp = formatTimestamp(timestamp || new Date().toISOString());
+                if (isSystem) { const el = document.createElement('p'); el.classList.add('chat-system-message'); el.textContent = `--- ${safeMessage} ---`; chatDisplay.appendChild(el); }
+                else { messageWrapper.classList.add('chat-message-wrapper'); const container = document.createElement('div'); container.classList.add('chat-message-container'); const avatar = document.createElement('img'); avatar.classList.add('chat-avatar'); avatar.src = safeAvatarUrl || `https://placehold.co/44x44/4B5563/FFFFFF?text=${safeNick.charAt(0).toUpperCase()}`; avatar.alt = `${safeNick} avatar`; avatar.onerror = () => { avatar.src = `https://placehold.co/44x44/4B5563/FFFFFF?text=${safeNick.charAt(0).toUpperCase()}`; avatar.onerror = null; }; avatar.addEventListener('click', () => showAvatarModal(avatar.src)); const bubble = document.createElement('div'); bubble.classList.add('chat-bubble'); const nickSpan = document.createElement('strong'); nickSpan.classList.add('chat-nickname'); nickSpan.textContent = safeNick; nickSpan.style.color = safeNicknameColor; if (safeNicknameGlowColor !== 'transparent') nickSpan.style.textShadow = `0 0 5px ${safeNicknameGlowColor}, 0 0 8px ${safeNicknameGlowColor}`; else nickSpan.style.textShadow = 'none'; const msgText = document.createElement('span'); msgText.classList.add('chat-message-text'); msgText.textContent = safeMessage; bubble.appendChild(nickSpan); bubble.appendChild(msgText); container.appendChild(avatar); container.appendChild(bubble); const tsSpan = document.createElement('span'); tsSpan.classList.add('chat-timestamp-below'); tsSpan.textContent = formattedTimestamp; messageWrapper.appendChild(container); messageWrapper.appendChild(tsSpan); if (isMyMessage) messageWrapper.classList.add('my-message'); chatDisplay.appendChild(messageWrapper); }
+                // Scroll logic adjusted for page view
+                if (!isHistory) { setTimeout(() => { if (chatDisplay) chatDisplay.scrollTo({ top: chatDisplay.scrollHeight, behavior: 'smooth' }); }, 0); }
+                else if (isHistory && document.getElementById('page-chat') && !document.getElementById('page-chat').classList.contains('hidden')) { setTimeout(() => { if (chatDisplay) chatDisplay.scrollTop = chatDisplay.scrollHeight; }, 50); } // Scroll history only if chat page is visible
+            }
+
+            function sendChatMessage() { const messageText = chatMessageInput?.value.trim(); if (chatWs && chatWs.readyState === WebSocket.OPEN && messageText && chatNickname) { const messageData = { type: 'message', nickname: chatNickname, message: messageText, avatarUrl: chatAvatarUrl, nicknameColor: chatNicknameColor, nicknameGlowColor: chatNicknameGlowColor }; chatWs.send(JSON.stringify(messageData)); if(chatMessageInput) chatMessageInput.value = ''; } else { if (chatNickname === '') addChatMessage("System", "Set details first.", true); else if (!chatWs || chatWs.readyState !== WebSocket.OPEN) addChatMessage("System", "Not connected.", true); } chatMessageInput?.focus(); }
+            function showAvatarModal(src) { if (avatarModal && avatarModalImg && src) { avatarModalImg.src = src; avatarModal.classList.remove('hidden'); setTimeout(() => avatarModal.classList.add('visible'), 10); } }
+            function hideAvatarModal() { if (avatarModal) { avatarModal.classList.remove('visible'); setTimeout(() => { avatarModal.classList.add('hidden'); if(avatarModalImg) avatarModalImg.src = ""; }, 300); } }
+            avatarModal?.addEventListener('click', (e) => { if (e.target === avatarModal) hideAvatarModal(); });
+
+           
+            chatEnterBtn?.addEventListener('click', () => {
+                const chosenNickname = chatNicknameInput?.value.trim();
+                const avatarUrlValue = chatAvatarUrlInput?.value.trim();
+                const colorValue = chatColorPicker?.value;
+                const glowColorValue = chatGlowColorPicker?.value === '#000000' ? 'transparent' : chatGlowColorPicker?.value; // Read initial glow, treat black as transparent
+
+                if (chosenNickname) {
+                    chatNickname = chosenNickname;
+                    chatAvatarUrl = avatarUrlValue;
+                    chatNicknameColor = colorValue;
+                    chatNicknameGlowColor = glowColorValue || 'transparent'; // Set initial glow
+                    isChatInitialized = true;
+                    loadChatHistory();
+                    connectChatWebSocket();
+                } else {
+                    addChatMessage("System", "Enter nickname.", true);
+                    chatNicknameInput?.focus();
+                }
+            });
+            chatSendBtn?.addEventListener('click', sendChatMessage);
+            chatMessageInput?.addEventListener('keypress', (event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); sendChatMessage(); } });
+
+            // Profile Edit Modal Logic 
+            function showProfileEditModal() { if (profileEditArea && profileEditOverlay && profileEditNicknameInput && profileEditAvatarUrlInput && profileEditColorPicker && profileEditGlowColorPicker) { profileEditNicknameInput.value = chatNickname; profileEditAvatarUrlInput.value = chatAvatarUrl; profileEditColorPicker.value = chatNicknameColor; profileEditGlowColorPicker.value = chatNicknameGlowColor === 'transparent' ? '#000000' : chatNicknameGlowColor; profileEditOverlay.classList.remove('hidden'); profileEditArea.classList.remove('hidden'); setTimeout(() => { profileEditOverlay.classList.add('visible'); profileEditArea.classList.add('visible'); }, 10); } }
+            function hideProfileEditModal() { if (profileEditArea && profileEditOverlay) { profileEditOverlay.classList.remove('visible'); profileEditArea.classList.remove('visible'); setTimeout(() => { profileEditOverlay.classList.add('hidden'); profileEditArea.classList.add('hidden'); }, 300); } }
+            changeProfileBtn?.addEventListener('click', showProfileEditModal);
+            profileEditCancelBtn?.addEventListener('click', hideProfileEditModal);
+            profileEditOverlay?.addEventListener('click', hideProfileEditModal);
+            profileEditSaveBtn?.addEventListener('click', () => { if (profileEditNicknameInput && profileEditAvatarUrlInput && profileEditColorPicker && profileEditGlowColorPicker) { const newNickname = profileEditNicknameInput.value.trim(); const newAvatarUrl = profileEditAvatarUrlInput.value.trim(); const newColor = profileEditColorPicker.value; const newGlowColor = profileEditGlowColorPicker.value === '#000000' ? 'transparent' : profileEditGlowColorPicker.value; if (newNickname) { const oldNickname = chatNickname; chatNickname = newNickname; chatAvatarUrl = newAvatarUrl; chatNicknameColor = newColor; chatNicknameGlowColor = newGlowColor; if (oldNickname !== newNickname) addChatMessage("System", `${sanitizeHTML(oldNickname)} is now ${sanitizeHTML(newNickname)}.`, true); else addChatMessage("System", `Profile updated for ${sanitizeHTML(chatNickname)}.`, true); hideProfileEditModal(); } else { console.warn("Nickname cannot be empty."); profileEditNicknameInput.focus(); } } });
+
+          
+            showPage('shop', true);
+
+        }); // End DOMContentLoaded
+    </script>
+
+</body>
+</html>
