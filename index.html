@@ -373,7 +373,7 @@
             function saveMessageToHistory(messageData) { if (!messageData || messageData.type !== 'message' || !messageData.timestamp) return; try { const historyJson = localStorage.getItem(chatHistoryKey); let history = historyJson ? JSON.parse(historyJson) : []; const dataToSave = { ...messageData, nicknameGlowColor: messageData.nicknameGlowColor || 'transparent' }; history.push(dataToSave); if (history.length > maxHistoryMessages) history = history.slice(history.length - maxHistoryMessages); localStorage.setItem(chatHistoryKey, JSON.stringify(history)); } catch (e) { console.error("Error saving message:", e); } }
 
             function connectChatWebSocket() {
-                const wsUrl = 'ws://3.15.190.138:8080'; // Updated with AWS IP
+                const wsUrl = 'wss://3.15.190.138:8080'; // Updated with AWS IP
                 if (chatWs && chatWs.readyState === WebSocket.OPEN) { chatInputArea.style.display = 'flex'; chatEntryArea.style.display = 'none'; changeProfileBtn.classList.remove('hidden'); return; }
                 console.log(`Connecting to ${wsUrl}...`); addChatMessage("System", "Connecting...", true);
                 try {
